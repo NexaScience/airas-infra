@@ -8,8 +8,6 @@ OSS としてのアプリケーションコードと、企業管理のインフ�
 |---|---|---|
 | `airas-org/airas` | Public (OSS) | アプリ本体（フロントエンド + バックエンド + プラグインインターフェース） |
 | `NexaScience/airas-infra` | Private | Terraform、CI/CD、デプロイ設定 |
-| `NexaScience/airas-commercial-ui` | Private | 商用フロントエンド（認証・課金 UI） |
-| `NexaScience/airas-commercial-backend` | Private | 商用バックエンド（認証・課金・有料限定機能） |
 
 ### OSS と商用機能の境界
 

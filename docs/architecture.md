@@ -2,53 +2,55 @@
 
 ## 全体構成図
 
-```
-                         ┌──────────────────────────────────────────────────────────┐
-                         │                      AWS Cloud                           │
-                         │                  (ap-northeast-1)                        │
-                         │                                                          │
-  ユーザー ──────────▶   │   ┌──────────┐    ┌─────────────────────────────────┐    │
-                         │   │ Route 53 │───▶│         CloudFront              │    │
-                         │   └──────────┘    │  ┌─────────┐   ┌───────────┐   │    │
-                         │                   │  │ S3      │   │ ALB       │   │    │
-                         │                   │  │(React   │   │(Backend   │   │    │
-                         │                   │  │ SPA)    │   │ Origin)   │   │    │
-                         │                   │  └─────────┘   └─────┬─────┘   │    │
-                         │                   └──────────────────────┼──────────┘    │
-                         │                                          │               │
-                         │              VPC (10.x.0.0/16)           │               │
-                         │   ┌──────────────────────────────────────┼───────────┐   │
-                         │   │  Public Subnet (x2 AZ)              │           │   │
-                         │   │   ┌─────────┐  ┌──────────────┐     │           │   │
-                         │   │   │   ALB   │◀─┘  NAT Gateway │     │           │   │
-                         │   │   └────┬────┘     └─────┬──────┘     │           │   │
-                         │   ├────────┼────────────────┼────────────┼───────────┤   │
-                         │   │  Private Subnet (x2 AZ) │                       │   │
-                         │   │   ┌────▼──────────────┐ │                       │   │
-                         │   │   │   ECS Fargate     │─┘                       │   │
-                         │   │   │   (FastAPI)       │                         │   │
-                         │   │   └────┬──────────────┘                         │   │
-                         │   ├────────┼────────────────────────────────────────┤   │
-                         │   │  Private Subnet (x2 AZ)                        │   │
-                         │   │   ┌────▼──────────────┐                         │   │
-                         │   │   │  RDS PostgreSQL   │                         │   │
-                         │   │   │  (16)             │                         │   │
-                         │   │   └───────────────────┘                         │   │
-                         │   └─────────────────────────────────────────────────┘   │
-                         │                                                          │
-                         │   ┌──────────────┐  ┌────────────┐  ┌──────────────┐    │
-                         │   │   Secrets    │  │ CloudWatch │  │    WAF       │    │
-                         │   │   Manager   │  │ (監視)     │  │ (prod のみ) │    │
-                         │   └──────────────┘  └────────────┘  └──────────────┘    │
-                         └──────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    User["ユーザー"]
 
-外部サービス:
-  → OpenAI / Anthropic / Google Gemini (LLM API)
-  → GitHub API
-  → Qdrant (ベクトルDB)
-  → W&B (実験追跡)
-  → Langfuse (LLM 可観測性)
-  → Semantic Scholar / arXiv / OpenAlex
+    subgraph AWS["AWS Cloud (ap-northeast-1)"]
+        Route53["Route 53"]
+        WAF["WAF (prod のみ)"]
+
+        subgraph CF["CloudFront (CDN)"]
+            S3["S3\n(React SPA)"]
+            ALBOrigin["ALB Origin"]
+        end
+
+        subgraph VPC["VPC (10.x.0.0/16)"]
+            subgraph Public["Public Subnet (x2 AZ)"]
+                ALB["ALB"]
+                NAT["NAT Gateway"]
+            end
+            subgraph PrivateApp["Private Subnet (x2 AZ) - App"]
+                ECS["ECS Fargate\n(FastAPI)"]
+            end
+            subgraph PrivateDB["Private Subnet (x2 AZ) - DB"]
+                RDS["RDS PostgreSQL 16"]
+            end
+        end
+
+        SecretsManager["Secrets Manager"]
+        CloudWatch["CloudWatch\n(監視)"]
+    end
+
+    subgraph External["外部サービス"]
+        LLM["OpenAI / Anthropic\nGoogle Gemini"]
+        GitHub["GitHub API"]
+        Qdrant["Qdrant\n(ベクトルDB)"]
+        WandB["W&B\n(実験追跡)"]
+        Langfuse["Langfuse\n(LLM 可観測性)"]
+        Academic["Semantic Scholar\narXiv / OpenAlex"]
+    end
+
+    User -->|HTTPS| Route53
+    Route53 --> WAF
+    WAF --> CF
+    ALBOrigin --> ALB
+    ALB --> ECS
+    ECS --> RDS
+    ECS --> NAT
+    NAT --> External
+    ECS -.-> SecretsManager
+    ECS -.-> CloudWatch
 ```
 
 ## リクエストフロー
@@ -75,32 +77,27 @@ CloudFront (CDN + WAF)
 
 ## CI/CD パイプライン
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    GitHub Actions                        │
-│                                                          │
-│  OIDC ──▶ IAM Role (長期キー不使用)                     │
-│                                                          │
-│  ┌─────────────────────────┐  ┌────────────────────────┐│
-│  │ Frontend Deploy         │  │ Backend Deploy         ││
-│  │                         │  │                        ││
-│  │ npm build               │  │ Docker build           ││
-│  │   ▼                     │  │   ▼                    ││
-│  │ S3 sync                 │  │ ECR push               ││
-│  │   ▼                     │  │   ▼                    ││
-│  │ CloudFront invalidation │  │ ECS service update     ││
-│  └─────────────────────────┘  └────────────────────────┘│
-│                                                          │
-│  ┌─────────────────────────┐                             │
-│  │ Terraform               │                             │
-│  │ plan → apply            │                             │
-│  └─────────────────────────┘                             │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph LR
+    subgraph GHA["GitHub Actions (OIDC → IAM Role)"]
+        subgraph Frontend["Frontend Deploy"]
+            F1["npm build"] --> F2["S3 sync"] --> F3["CloudFront\ninvalidation"]
+        end
+        subgraph Backend["Backend Deploy"]
+            B1["Docker build"] --> B2["ECR push"] --> B3["ECS service\nupdate"]
+        end
+        subgraph Infra["Terraform"]
+            T1["plan"] --> T2["apply"]
+        end
+    end
 
-デプロイフロー:
-  develop push  → dev 環境に自動デプロイ
-  staging push  → staging 環境に自動デプロイ
-  main push     → production 環境に自動デプロイ（承認ゲート付き）
+    subgraph Trigger["デプロイフロー"]
+        Dev["develop push\n→ dev 自動デプロイ"]
+        Stg["staging push\n→ staging 自動デプロイ"]
+        Prod["main push\n→ prod デプロイ\n(承認ゲート付き)"]
+    end
+
+    Trigger --> GHA
 ```
 
 ## ネットワーク設計
