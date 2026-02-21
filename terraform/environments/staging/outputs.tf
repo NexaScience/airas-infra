@@ -27,3 +27,13 @@ output "ecs_service_name" {
   description = "ECS service name"
   value       = module.ecs.service_name
 }
+
+output "db_endpoint" {
+  description = "RDS endpoint"
+  value       = module.rds.db_instance_endpoint
+}
+
+output "db_secret_arn" {
+  description = "DB credentials secret ARN"
+  value       = module.rds.db_secret_arn
+}
