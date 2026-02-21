@@ -52,3 +52,8 @@ output "task_role_arn" {
   description = "ECS task role ARN"
   value       = aws_iam_role.ecs_task.arn
 }
+
+output "alb_arn_suffix" {
+  description = "ALB ARN suffix for CloudWatch metrics"
+  value       = aws_lb.this.arn_suffix
+}
