@@ -47,3 +47,10 @@ module "rds" {
   deletion_protection     = false
   skip_final_snapshot     = true
 }
+
+module "frontend" {
+  source = "../../modules/s3-cloudfront"
+
+  project     = var.project
+  environment = var.environment
+}
