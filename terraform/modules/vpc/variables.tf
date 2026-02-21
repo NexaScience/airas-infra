@@ -1,41 +1,35 @@
 variable "project" {
-  description = "Project name used for resource naming"
+  description = "Project name"
   type        = string
-  default     = "airas"
 }
 
 variable "environment" {
-  description = "Environment name"
+  description = "Environment name (dev, staging, prod)"
   type        = string
-  default     = "prod"
-}
-
-variable "aws_region" {
-  description = "AWS region"
-  type        = string
-  default     = "ap-northeast-1"
 }
 
 variable "vpc_cidr" {
   description = "CIDR block for VPC"
   type        = string
-  default     = "10.2.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets"
   type        = list(string)
-  default     = ["10.2.1.0/24", "10.2.2.0/24"]
 }
 
 variable "private_subnet_cidrs" {
   description = "CIDR blocks for private subnets"
   type        = list(string)
-  default     = ["10.2.10.0/24", "10.2.11.0/24"]
 }
 
 variable "availability_zones" {
   description = "List of availability zones"
   type        = list(string)
-  default     = ["ap-northeast-1a", "ap-northeast-1c"]
+}
+
+variable "single_nat_gateway" {
+  description = "Use a single NAT Gateway (true for dev/staging, false for prod)"
+  type        = bool
+  default     = true
 }
