@@ -93,7 +93,6 @@ graph LR
 
     subgraph Trigger["デプロイフロー"]
         Dev["develop push\n→ dev 自動デプロイ"]
-        Stg["staging push\n→ staging 自動デプロイ"]
         Prod["main push\n→ prod デプロイ\n(承認ゲート付き)"]
     end
 
@@ -103,7 +102,7 @@ graph LR
 ## ネットワーク設計
 
 ```
-VPC (10.x.0.0/16)     ※ x = 0(dev), 1(staging), 2(prod)
+VPC (10.x.0.0/16)     ※ x = 0(dev), 2(prod)
 │
 ├── Public Subnet x2 (10.x.1.0/24, 10.x.2.0/24) - 2AZ
 │   ├── ALB
