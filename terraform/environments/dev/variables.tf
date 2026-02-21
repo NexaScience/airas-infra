@@ -39,3 +39,32 @@ variable "availability_zones" {
   type        = list(string)
   default     = ["ap-northeast-1a", "ap-northeast-1c"]
 }
+
+variable "ecr_repository_url" {
+  description = "ECR repository URL"
+  type        = string
+}
+
+variable "container_port" {
+  description = "Container port"
+  type        = number
+  default     = 8000
+}
+
+variable "cpu" {
+  description = "Fargate task CPU units"
+  type        = number
+  default     = 256
+}
+
+variable "memory" {
+  description = "Fargate task memory (MB)"
+  type        = number
+  default     = 512
+}
+
+variable "desired_count" {
+  description = "Number of ECS tasks"
+  type        = number
+  default     = 1
+}

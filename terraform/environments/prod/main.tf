@@ -10,3 +10,24 @@ module "vpc" {
   availability_zones   = var.availability_zones
   single_nat_gateway   = false
 }
+
+module "ecs" {
+  source = "../../modules/ecs"
+
+  project     = var.project
+  environment = var.environment
+
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_ids  = module.vpc.public_subnet_ids
+  private_subnet_ids = module.vpc.private_subnet_ids
+
+  ecr_repository_url = var.ecr_repository_url
+  container_port     = var.container_port
+  cpu                = var.cpu
+  memory             = var.memory
+  desired_count      = var.desired_count
+  health_check_path  = "/health"
+  enable_autoscaling = true
+  min_capacity       = 2
+  max_capacity       = 4
+}
