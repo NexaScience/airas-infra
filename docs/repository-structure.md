@@ -52,7 +52,6 @@ airas-infra/
 │   │   └── waf/                    #   WAF
 │   ├── environments/
 │   │   ├── dev/                    # 開発環境
-│   │   ├── staging/                # ステージング環境
 │   │   └── prod/                   # 本番環境
 │   └── global/                     # 環境横断リソース (ECR, IAM)
 ├── .gitignore
@@ -75,7 +74,7 @@ airas-infra/
 
 ### 環境ディレクトリ構成
 
-各環境ディレクトリ (`dev` / `staging` / `prod`) は以下のファイルを持ちます:
+各環境ディレクトリ (`dev` / `prod`) は以下のファイルを持ちます:
 
 ```
 environments/{env}/
@@ -101,5 +100,4 @@ feature/xxx → develop → main
 |---|---|---|
 | `feature/*` | 機能開発 | - |
 | `develop` | 開発統合 | dev 環境 |
-| `staging` | リリース準備 | staging 環境 |
 | `main` | 本番リリース | production 環境 |
