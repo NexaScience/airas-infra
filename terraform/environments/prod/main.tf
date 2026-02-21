@@ -56,3 +56,15 @@ module "frontend" {
   project     = var.project
   environment = var.environment
 }
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  project     = var.project
+  environment = var.environment
+
+  ecs_cluster_name       = module.ecs.cluster_name
+  ecs_service_name       = module.ecs.service_name
+  alb_arn_suffix         = module.ecs.alb_arn_suffix
+  db_instance_identifier = module.rds.db_instance_identifier
+}
