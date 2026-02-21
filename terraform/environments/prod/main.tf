@@ -68,3 +68,12 @@ module "monitoring" {
   alb_arn_suffix         = module.ecs.alb_arn_suffix
   db_instance_identifier = module.rds.db_instance_identifier
 }
+
+module "waf" {
+  source = "../../modules/waf"
+
+  project     = var.project
+  environment = var.environment
+
+  alb_arn = module.ecs.alb_arn
+}

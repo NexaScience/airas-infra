@@ -47,3 +47,8 @@ output "frontend_bucket_name" {
   description = "Frontend S3 bucket name"
   value       = module.frontend.bucket_name
 }
+
+output "waf_web_acl_id" {
+  description = "WAF Web ACL ID"
+  value       = module.waf.web_acl_id
+}
