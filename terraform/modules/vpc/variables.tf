@@ -4,7 +4,7 @@ variable "project" {
 }
 
 variable "environment" {
-  description = "Environment name (dev, staging, prod)"
+  description = "Environment name (dev, prod)"
   type        = string
 }
 
@@ -29,7 +29,7 @@ variable "availability_zones" {
 }
 
 variable "single_nat_gateway" {
-  description = "Use a single NAT Gateway (true for dev/staging, false for prod)"
+  description = "Use a single NAT Gateway (true for dev, false for prod)"
   type        = bool
   default     = true
 }

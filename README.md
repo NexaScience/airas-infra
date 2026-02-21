@@ -6,7 +6,7 @@ AIRAS プロジェクトの AWS インフラを Terraform で管理するリポ�
 |------|------|
 | クラウド | AWS (ap-northeast-1) |
 | IaC | Terraform >= 1.6 |
-| 環境 | dev / staging / prod |
+| 環境 | dev / prod |
 
 ## ドキュメント
 
@@ -16,7 +16,7 @@ AIRAS プロジェクトの AWS インフラを Terraform で管理するリポ�
 | [インフラ詳細](docs/infrastructure-details.md) | 各サービスの設定、セキュリティ、監視、コスト見積もり |
 | [技術スタック一覧](docs/tech-stack.md) | AWS サービス、アプリケーション技術、外部サービス |
 | [リポジトリ構成](docs/repository-structure.md) | マルチリポジトリ戦略、ディレクトリ構成、ブランチ運用 |
-| [環境構成](docs/environments.md) | dev / staging / prod の詳細スペックと比較 |
+| [環境構成](docs/environments.md) | dev / prod の詳細スペックと比較 |
 
 ## セットアップ
 
