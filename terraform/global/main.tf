@@ -1,2 +1,5 @@
-# Global resources (ECR repositories, IAM roles, etc.)
-# Will be populated in later phases
+module "ecr" {
+  source = "../modules/ecr"
+
+  project = var.project
+}
