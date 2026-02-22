@@ -53,6 +53,9 @@ module "frontend" {
 
   project     = var.project
   environment = var.environment
+
+  enable_basic_auth      = true
+  basic_auth_credentials = var.basic_auth_credentials
 }
 
 module "monitoring" {
