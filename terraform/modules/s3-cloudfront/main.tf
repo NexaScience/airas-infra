@@ -49,6 +49,20 @@ resource "aws_cloudfront_origin_access_control" "this" {
 }
 
 ################################################################################
+# CloudFront Functions (Basic Auth)
+################################################################################
+
+resource "aws_cloudfront_function" "basic_auth" {
+  count   = var.enable_basic_auth ? 1 : 0
+  name    = "${var.project}-${var.environment}-basic-auth"
+  runtime = "cloudfront-js-2.0"
+  code    = templatefile("${path.module}/functions/basic-auth.js", {
+    credentials = var.basic_auth_credentials
+  })
+  publish = true
+}
+
+################################################################################
 # CloudFront Distribution
 ################################################################################
 
@@ -81,6 +95,14 @@ resource "aws_cloudfront_distribution" "this" {
     default_ttl            = 3600
     max_ttl                = 86400
     compress               = true
+
+    dynamic "function_association" {
+      for_each = var.enable_basic_auth ? [1] : []
+      content {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.basic_auth[0].arn
+      }
+    }
   }
 
   # SPA routing: return index.html for 403/404

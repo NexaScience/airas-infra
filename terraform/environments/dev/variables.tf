@@ -92,3 +92,9 @@ variable "db_backup_retention" {
   type        = number
   default     = 7
 }
+
+variable "basic_auth_credentials" {
+  description = "Base64-encoded username:password for Basic authentication"
+  type        = string
+  sensitive   = true
+}
