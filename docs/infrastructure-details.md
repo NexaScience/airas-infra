@@ -15,13 +15,13 @@ FastAPI アプリケーションを Docker コンテナとして ECS Fargate 上
 
 #### 環境別スペック
 
-| | dev | prod |
-|--|-----|------|
-| CPU | 256 (0.25 vCPU) | 1024 (1 vCPU) |
-| メモリ | 512 MB | 2048 MB |
-| 最小タスク数 | 1 | 2 |
-| 最大タスク数 | 2 | 4 |
-| Auto Scaling | なし | CPU 70% ターゲット (2-4) |
+| | dev | staging | prod |
+|--|-----|---------|------|
+| CPU | 256 (0.25 vCPU) | 1024 (1 vCPU) | 1024 (1 vCPU) |
+| メモリ | 512 MB | 2048 MB | 2048 MB |
+| 最小タスク数 | 1 | 1 | 2 |
+| 最大タスク数 | 2 | 1 | 4 |
+| Auto Scaling | なし | なし | CPU 70% ターゲット (2-4) |
 
 #### 長時間実行タスクの対応
 
@@ -44,7 +44,7 @@ React SPA を S3 に配置し、CloudFront で配信します。
 | S3 バケット | `airas-{env}-frontend` |
 | アクセス制御 | CloudFront OAC で S3 アクセス制限 |
 | SPA ルーティング | 404 → index.html リダイレクト |
-| WAF | prod のみ |
+| WAF | staging / prod |
 
 #### キャッシュ戦略
 
@@ -60,13 +60,13 @@ React SPA を S3 に配置し、CloudFront で配信します。
 
 ### RDS PostgreSQL 16
 
-| | dev | prod |
-|--|-----|------|
-| インスタンス | db.t3.small | db.r6g.large |
-| ストレージ | 20 GB | 50 GB |
-| Multi-AZ | No | Yes |
-| バックアップ保持 | 7 日 | 30 日 |
-| 削除保護 | No | Yes |
+| | dev | staging | prod |
+|--|-----|---------|------|
+| インスタンス | db.t3.small | db.t3.medium | db.r6g.large |
+| ストレージ | 20 GB | 30 GB | 50 GB |
+| Multi-AZ | No | No | Yes |
+| バックアップ保持 | 7 日 | 14 日 | 30 日 |
+| 削除保護 | No | Yes | Yes |
 
 ### その他ストレージ
 
@@ -82,13 +82,13 @@ React SPA を S3 に配置し、CloudFront で配信します。
 
 ### VPC
 
-| | dev | prod |
-|--|-----|------|
-| VPC CIDR | 10.0.0.0/16 | 10.2.0.0/16 |
-| Public Subnet | 2 (ALB, NAT GW) | 2 |
-| Private Subnet | 2 (ECS, RDS) | 2 |
-| NAT Gateway | 1 | 2 (冗長構成) |
-| AZ | 2 | 2 |
+| | dev | staging | prod |
+|--|-----|---------|------|
+| VPC CIDR | 10.0.0.0/16 | 10.1.0.0/16 | 10.2.0.0/16 |
+| Public Subnet | 2 (ALB, NAT GW) | 2 | 2 |
+| Private Subnet | 2 (ECS, RDS) | 2 | 2 |
+| NAT Gateway | 1 | 1 | 2 (冗長構成) |
+| AZ | 2 | 2 | 2 |
 
 ---
 
@@ -98,7 +98,7 @@ React SPA を S3 に配置し、CloudFront で配信します。
 |---|---|
 | IAM | 最小権限の原則。ECS Task Role / Execution Role を分離 |
 | CI/CD 認証 | GitHub Actions OIDC（長期アクセスキー不使用） |
-| WAF | AWS Managed Rules + レートリミット（prod の CloudFront + ALB にアタッチ） |
+| WAF | AWS Managed Rules + レートリミット（staging / prod の CloudFront + ALB にアタッチ） |
 | SSL/TLS | ACM で無料証明書、自動更新 |
 | Shield | Standard（自動適用、追加コスト無し） |
 
@@ -122,7 +122,7 @@ ECS タスク定義の `secrets` プロパティで環境変数に注入。コ�
 
 | 対象 | 設定 |
 |---|---|
-| ECS コンテナログ | CloudWatch Logs（保持: dev 7 日 / prod 90 日） |
+| ECS コンテナログ | CloudWatch Logs（保持: dev 7 日 / staging 30 日 / prod 90 日） |
 | ALB アクセスログ | S3 に保存 |
 | RDS ログ | slow query log, error log → CloudWatch Logs |
 | CloudTrail | 全リージョン有効化（API 呼び出し監査） |
@@ -175,6 +175,21 @@ ECS タスク定義の `secrets` プロパティで環境変数に注入。コ�
 | Route 53 | 1 ホストゾーン | ~$1 |
 | **合計** | | **~$92/月** |
 
+### staging 環境（本番同等スペック・冗長性なし）
+
+| サービス | 構成 | 月額概算 |
+|---|---|---|
+| ECS Fargate | 1 vCPU, 2GB RAM x 1 タスク | ~$30 |
+| RDS PostgreSQL | db.t3.medium, 30GB | ~$25 |
+| ALB | 1 ALB | ~$20 |
+| CloudFront + S3 | 低トラフィック | ~$2 |
+| NAT Gateway | 1 AZ | ~$35 |
+| WAF | Web ACL + ルール | ~$10 |
+| Secrets Manager | ~10 シークレット | ~$4 |
+| CloudWatch Logs | 中 | ~$10 |
+| Route 53 | 共有ホストゾーン | ~$1 |
+| **合計** | | **~$155/月** |
+
 ### production（中規模トラフィック）
 
 | サービス | 構成 | 月額概算 |
@@ -195,4 +210,4 @@ ECS タスク定義の `secrets` プロパティで環境変数に注入。コ�
 - **NAT Gateway 代替**: dev 環境では fck-nat（OSS の NAT インスタンス）で $35/月削減
 - **Savings Plans**: 本番安定後に Compute Savings Plans（1 年）で Fargate コスト最大 50% 削減
 - **RDS Reserved Instance**: 本番 RDS を 1 年 RI で約 40% 削減
-- **ECS スケジュールスケーリング**: dev は夜間・休日にタスク数 0
+- **ECS スケジュールスケーリング**: dev / staging は夜間・休日にタスク数 0
