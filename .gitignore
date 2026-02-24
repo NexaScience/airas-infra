@@ -220,3 +220,6 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 *.tfplan
+
+.claude/CLAUDE.local.md
+.claude/settings.local.json
