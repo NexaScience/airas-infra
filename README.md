@@ -54,12 +54,12 @@ terraform apply
 | # | フェーズ | 状態 |
 |---|---------|------|
 | 1 | Terraform 基盤 (S3 backend, ディレクトリ構成) | 完了 |
-| 2 | VPC + ネットワーク | 未着手 |
-| 3 | ECR + ECS Fargate + ALB | 未着手 |
+| 2 | VPC + ネットワーク | 完了 |
+| 3 | ECR + ECS Fargate + ALB | 完了 |
 | 4 | RDS PostgreSQL | 未着手 |
-| 5 | S3 + CloudFront | 未着手 |
+| 5 | S3 + CloudFront | 完了 |
 | 6 | Secrets Manager | 未着手 |
 | 7 | Route 53 + ACM (ドメイン取得後) | 未着手 |
-| 8 | CI/CD パイプライン | 未着手 |
+| 8 | CI/CD パイプライン | 完了 |
 | 9 | CloudWatch 監視 | 未着手 |
-| 10 | WAF | 未着手 |
+| 10 | WAF | 完了 |
