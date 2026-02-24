@@ -93,7 +93,7 @@ graph LR
 
     subgraph Trigger["デプロイフロー"]
         Dev["develop push\n→ dev 自動デプロイ"]
-        Staging["staging push\n→ staging 自動デプロイ"]
+        Staging["workflow_dispatch\n→ staging 手動デプロイ"]
         Prod["main push\n→ prod デプロイ\n(承認ゲート付き)"]
     end
 

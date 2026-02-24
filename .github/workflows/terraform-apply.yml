@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - staging
       - main
     paths:
       - 'terraform/**'
@@ -31,10 +30,10 @@ jobs:
   apply:
     name: Terraform Apply
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || (github.ref == 'refs/heads/staging' && 'staging' || 'dev')) }}
+    environment: ${{ inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
     defaults:
       run:
-        working-directory: terraform/environments/${{ inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || (github.ref == 'refs/heads/staging' && 'staging' || 'dev')) }}
+        working-directory: terraform/environments/${{ inputs.environment || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
 
     steps:
       - name: Checkout

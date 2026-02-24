@@ -91,14 +91,15 @@ environments/{env}/
 ## ブランチ運用
 
 ```
-feature/xxx → develop → staging → main
-                ↑          ↑          ↑
-           開発統合    ステージング  本番リリース
+feature/xxx → develop → main
+                ↑          ↑
+           開発統合      本番リリース
 ```
 
 | ブランチ | 用途 | デプロイ先 |
 |---|---|---|
 | `feature/*` | 機能開発 | - |
 | `develop` | 開発統合 | dev 環境 |
-| `staging` | リリース前検証 | staging 環境 |
 | `main` | 本番リリース | production 環境 |
+
+staging 環境へのデプロイは `workflow_dispatch` による手動実行で行います。
