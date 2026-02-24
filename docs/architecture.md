@@ -8,7 +8,7 @@ graph TB
 
     subgraph AWS["AWS Cloud (ap-northeast-1)"]
         Route53["Route 53"]
-        WAF["WAF (prod のみ)"]
+        WAF["WAF (staging/prod)"]
 
         subgraph CF["CloudFront (CDN)"]
             S3["S3\n(React SPA)"]
@@ -93,6 +93,7 @@ graph LR
 
     subgraph Trigger["デプロイフロー"]
         Dev["develop push\n→ dev 自動デプロイ"]
+        Staging["staging push\n→ staging 自動デプロイ"]
         Prod["main push\n→ prod デプロイ\n(承認ゲート付き)"]
     end
 
@@ -102,7 +103,7 @@ graph LR
 ## ネットワーク設計
 
 ```
-VPC (10.x.0.0/16)     ※ x = 0(dev), 2(prod)
+VPC (10.x.0.0/16)     ※ x = 0(dev), 1(staging), 2(prod)
 │
 ├── Public Subnet x2 (10.x.1.0/24, 10.x.2.0/24) - 2AZ
 │   ├── ALB
