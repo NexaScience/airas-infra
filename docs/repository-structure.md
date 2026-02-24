@@ -29,9 +29,8 @@ airas-infra/
 ├── .claude/                        # Claude Code 設定
 ├── .github/
 │   └── workflows/
-│       ├── deploy-backend.yml      # バックエンドデプロイ (ECR → ECS)
-│       ├── deploy-frontend.yml     # フロントエンドデプロイ (S3 → CloudFront)
-│       └── terraform-plan.yml      # Terraform plan/apply
+│       ├── terraform-plan.yml      # Terraform plan (PR 時)
+│       └── terraform-apply.yml     # Terraform apply (マージ時)
 ├── docs/                           # ドキュメント
 │   ├── plans/                      #   実装計画
 │   ├── architecture.md             #   アーキテクチャ図
@@ -52,6 +51,7 @@ airas-infra/
 │   │   └── waf/                    #   WAF
 │   ├── environments/
 │   │   ├── dev/                    # 開発環境
+│   │   ├── staging/                # ステージング環境
 │   │   └── prod/                   # 本番環境
 │   └── global/                     # 環境横断リソース (ECR, IAM)
 ├── .gitignore
@@ -74,7 +74,7 @@ airas-infra/
 
 ### 環境ディレクトリ構成
 
-各環境ディレクトリ (`dev` / `prod`) は以下のファイルを持ちます:
+各環境ディレクトリ (`dev` / `staging` / `prod`) は以下のファイルを持ちます:
 
 ```
 environments/{env}/
@@ -101,3 +101,5 @@ feature/xxx → develop → main
 | `feature/*` | 機能開発 | - |
 | `develop` | 開発統合 | dev 環境 |
 | `main` | 本番リリース | production 環境 |
+
+staging 環境へのデプロイは `workflow_dispatch` による手動実行で行います。

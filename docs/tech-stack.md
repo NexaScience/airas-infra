@@ -40,7 +40,7 @@
 | Secrets Manager | DB パスワード / API キー管理 |
 | Parameter Store | Langfuse / W&B 等の設定値 |
 | ACM | SSL/TLS 証明書（自動更新） |
-| WAF | Web アプリケーションファイアウォール（prod のみ） |
+| WAF | Web アプリケーションファイアウォール（staging / prod） |
 | Shield Standard | DDoS 防御 |
 
 ### 監視・運用
