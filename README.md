@@ -20,6 +20,22 @@ AIRAS プロジェクトの AWS インフラを Terraform で管理するリポ�
 
 ## セットアップ
 
+### 前提条件
+
+```bash
+# AWS CLI v2 のインストール (未インストールの場合)
+./scripts/install-aws-cli.sh
+
+# AWS 認証情報の設定
+aws configure
+# AWS Access Key ID:     <アクセスキーを入力>
+# AWS Secret Access Key: <シークレットキーを入力>
+# Default region name:   ap-northeast-1
+# Default output format: json
+```
+
+### Terraform の初期化と実行
+
 ```bash
 # 1. Terraform backend の作成 (初回のみ)
 ./scripts/bootstrap-backend.sh
