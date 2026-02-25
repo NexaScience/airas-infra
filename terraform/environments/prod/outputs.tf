@@ -47,3 +47,8 @@ output "api_fqdn" {
   description = "API domain name"
   value       = module.dns.api_fqdn
 }
+
+output "name_servers" {
+  description = "NS records to set in the domain registrar account"
+  value       = data.terraform_remote_state.global.outputs.name_servers
+}

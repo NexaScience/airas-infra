@@ -1,3 +1,12 @@
+data "terraform_remote_state" "global" {
+  backend = "s3"
+  config = {
+    bucket = "airas-terraform-state-427979936961"
+    key    = "global/terraform.tfstate"
+    region = "ap-northeast-1"
+  }
+}
+
 module "vpc" {
   source = "../../modules/vpc"
 
@@ -42,6 +51,7 @@ module "dns" {
   domain_name        = "airas.io"
   api_subdomain      = "api"
   frontend_subdomain = "app"
+  zone_id            = data.terraform_remote_state.global.outputs.route53_zone_id
   alb_dns_name       = module.ecs.alb_dns_name
   alb_zone_id        = module.ecs.alb_zone_id
 }
