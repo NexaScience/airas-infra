@@ -29,9 +29,8 @@ airas-infra/
 ├── .claude/                        # Claude Code 設定
 ├── .github/
 │   └── workflows/
-│       ├── deploy-backend.yml      # バックエンドデプロイ (ECR → ECS)
-│       ├── deploy-frontend.yml     # フロントエンドデプロイ (S3 → CloudFront)
-│       └── terraform-plan.yml      # Terraform plan/apply
+│       ├── terraform-plan.yml      # Terraform plan (PR 時)
+│       └── terraform-apply.yml     # Terraform apply (マージ時)
 ├── docs/                           # ドキュメント
 │   ├── plans/                      #   実装計画
 │   ├── architecture.md             #   アーキテクチャ図
@@ -47,7 +46,6 @@ airas-infra/
 │   │   ├── ecr/                    #   ECR リポジトリ
 │   │   ├── ecs/                    #   ECS Cluster, Service, Task Definition
 │   │   ├── rds/                    #   RDS PostgreSQL
-│   │   ├── s3-cloudfront/          #   S3 + CloudFront
 │   │   ├── monitoring/             #   CloudWatch
 │   │   └── waf/                    #   WAF
 │   ├── environments/
@@ -68,9 +66,10 @@ airas-infra/
 | `ecr` | ECR リポジトリ, ライフサイクルポリシー |
 | `ecs` | ECS Cluster, Service, Task Definition, ALB, セキュリティグループ |
 | `rds` | RDS PostgreSQL インスタンス, サブネットグループ, セキュリティグループ |
-| `s3-cloudfront` | S3 バケット, CloudFront ディストリビューション, OAC |
 | `monitoring` | CloudWatch ダッシュボード, アラーム, SNS トピック |
 | `waf` | WAF Web ACL, マネージドルール |
+
+> **注**: フロントエンドは Vercel でホスティングしており、Terraform 管理外です。
 
 ### 環境ディレクトリ構成
 

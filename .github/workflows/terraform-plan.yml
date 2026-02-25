@@ -49,7 +49,6 @@ jobs:
         continue-on-error: true
         env:
           TF_VAR_ecr_repository_url: ${{ secrets.ECR_REPOSITORY_URL }}
-          TF_VAR_basic_auth_credentials: ${{ secrets.BASIC_AUTH_CREDENTIALS }}
 
       - name: Comment PR
         uses: actions/github-script@v7

@@ -35,24 +35,16 @@ FastAPI アプリケーションを Docker コンテナとして ECS Fargate 上
 
 ## フロントエンドホスティング
 
-### S3 + CloudFront
+### Vercel
 
-React SPA を S3 に配置し、CloudFront で配信します。
+フロントエンド（React SPA）は Vercel でホスティングしています。Terraform 管理外です。
 
 | 項目 | 詳細 |
 |---|---|
-| S3 バケット | `airas-{env}-frontend` |
-| アクセス制御 | CloudFront OAC で S3 アクセス制限 |
-| SPA ルーティング | 404 → index.html リダイレクト |
-| WAF | prod のみ |
-
-#### キャッシュ戦略
-
-| ファイル種類 | キャッシュ TTL | 理由 |
-|---|---|---|
-| `index.html` | no-cache（毎回検証） | 最新の JS バンドルを参照する必要あり |
-| `assets/*.js`, `assets/*.css` | 1 年 | Vite がコンテンツハッシュ付きファイル名を生成 |
-| `*.png`, `*.svg` | 1 ヶ月 | 画像アセット |
+| ホスティング | Vercel |
+| フレームワーク | React (Vite) |
+| デプロイ | Git push による自動デプロイ |
+| 管理 | Terraform 管理外 |
 
 ---
 
@@ -98,7 +90,7 @@ React SPA を S3 に配置し、CloudFront で配信します。
 |---|---|
 | IAM | 最小権限の原則。ECS Task Role / Execution Role を分離 |
 | CI/CD 認証 | GitHub Actions OIDC（長期アクセスキー不使用） |
-| WAF | AWS Managed Rules + レートリミット（prod の CloudFront + ALB にアタッチ） |
+| WAF | AWS Managed Rules + レートリミット（prod の ALB にアタッチ） |
 | SSL/TLS | ACM で無料証明書、自動更新 |
 | Shield | Standard（自動適用、追加コスト無し） |
 
@@ -136,13 +128,11 @@ ECS タスク定義の `secrets` プロパティで環境変数に注入。コ�
 | RDS CPU 使用率 | > 70%（10 分間） | SNS → Discord 通知 |
 | RDS 空きストレージ | < 5GB | SNS → Discord 通知 |
 | ALB 5xx エラー率 | > 5%（5 分間） | SNS → Discord 通知 |
-| CloudFront 5xx エラー率 | > 1% | SNS → Discord 通知 |
 
 ### トレーシング
 
 - LLM 可観測性: Langfuse（既存活用）
 - フロントエンドエラー: Sentry
-- パフォーマンス: CloudWatch RUM（Core Web Vitals）
 - コンテナメトリクス: CloudWatch Container Insights
 
 ---
@@ -168,12 +158,11 @@ ECS タスク定義の `secrets` プロパティで環境変数に注入。コ�
 | ECS Fargate | 0.25 vCPU, 512MB RAM x 1 タスク | ~$10 |
 | RDS PostgreSQL | db.t3.small, 20GB | ~$15 |
 | ALB | 1 ALB | ~$20 |
-| CloudFront + S3 | 低トラフィック | ~$2 |
 | NAT Gateway | 1 AZ | ~$35 |
 | Secrets Manager | ~10 シークレット | ~$4 |
 | CloudWatch Logs | 最小 | ~$5 |
 | Route 53 | 1 ホストゾーン | ~$1 |
-| **合計** | | **~$92/月** |
+| **合計** | | **~$90/月** |
 
 ### production（中規模トラフィック）
 
@@ -182,13 +171,12 @@ ECS タスク定義の `secrets` プロパティで環境変数に注入。コ�
 | ECS Fargate | 1 vCPU, 2GB RAM x 2 タスク | ~$60 |
 | RDS PostgreSQL | db.r6g.large, 50GB, マルチ AZ | ~$50 |
 | ALB | 1 ALB | ~$25 |
-| CloudFront + S3 | 中トラフィック | ~$10 |
 | NAT Gateway | 2 AZ | ~$70 |
 | WAF | Web ACL + ルール | ~$10 |
 | Secrets Manager | ~10 シークレット | ~$4 |
 | CloudWatch | ログ + アラーム | ~$20 |
 | Route 53 | 1 ホストゾーン + ヘルスチェック | ~$2 |
-| **合計** | | **~$250/月** |
+| **合計** | | **~$240/月** |
 
 ### コスト削減策
 

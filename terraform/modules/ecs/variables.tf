@@ -76,6 +76,18 @@ variable "max_capacity" {
   default     = 4
 }
 
+variable "enable_https" {
+  description = "Enable HTTPS listener on ALB"
+  type        = bool
+  default     = false
+}
+
+variable "certificate_arn" {
+  description = "ACM certificate ARN for HTTPS listener"
+  type        = string
+  default     = ""
+}
+
 variable "secret_arns" {
   description = "Map of environment variable name to Secrets Manager secret ARN"
   type        = map(string)

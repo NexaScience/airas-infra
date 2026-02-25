@@ -2,12 +2,14 @@
 
 ## 概要
 
-2 つの環境を Terraform の環境別ディレクトリで管理しています。
+2 つの環境を Terraform の環境別ディレクトリで管理しています。フロントエンドは Vercel でホスティングしており、Terraform 管理外です。
 
 ```
 単一 AWS アカウント (427979936961)
-├── dev      (ECS: airas-dev-*,     RDS: airas-dev,     S3: airas-dev-frontend)
-└── prod     (ECS: airas-prod-*,    RDS: airas-prod,    S3: airas-prod-frontend)
+├── dev      (ECS: airas-dev-*,     RDS: airas-dev)
+└── prod     (ECS: airas-prod-*,    RDS: airas-prod)
+
+フロントエンド: Vercel (Terraform 管理外)
 ```
 
 ---
@@ -19,7 +21,6 @@
 | 項目 | 設定 |
 |---|---|
 | **デプロイトリガー** | `develop` ブランチへの push |
-| **ドメイン** | `dev.airas.example.com` |
 | **VPC CIDR** | 10.0.0.0/16 |
 
 ### リソーススペック
@@ -32,7 +33,7 @@
 | WAF | なし |
 | ログ保持 | 7 日 |
 
-### 月額コスト概算: ~$92
+### 月額コスト概算: ~$90
 
 ---
 
@@ -43,7 +44,6 @@
 | 項目 | 設定 |
 |---|---|
 | **デプロイトリガー** | `main` ブランチへの push（承認ゲート付き） |
-| **ドメイン** | `app.airas.example.com` / `api.airas.example.com` |
 | **VPC CIDR** | 10.2.0.0/16 |
 
 ### リソーススペック
@@ -56,7 +56,7 @@
 | WAF | **有効**（AWS Managed Rules + レートリミット） |
 | ログ保持 | 90 日 |
 
-### 月額コスト概算: ~$250
+### 月額コスト概算: ~$240
 
 ---
 
@@ -78,6 +78,7 @@
 | **WAF** | なし | あり |
 | **ログ保持** | 7 日 | 90 日 |
 | **デプロイ** | 自動 | 承認ゲート付き |
+| **フロントエンド** | Vercel | Vercel |
 
 ---
 
@@ -86,10 +87,10 @@
 Route 53 で管理（ドメイン取得後に有効化）:
 
 ```
-app.airas.example.com      → CloudFront (フロントエンド SPA)
-api.airas.example.com      → CloudFront → ALB (バックエンド API)
-dev.airas.example.com      → dev 環境 CloudFront
+api.airas.example.com      → ALB (バックエンド API)
 ```
+
+フロントエンドのドメインは Vercel 側で管理します。
 
 ---
 
