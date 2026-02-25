@@ -9,6 +9,7 @@
 | IaC | Terraform >= 1.6 | インフラのコード管理 |
 | CI/CD | GitHub Actions | ビルド・デプロイ自動化 |
 | 認証連携 | OIDC (GitHub → AWS) | CI/CD からの AWS 認証 |
+| フロントエンドホスティング | Vercel | フロントエンド配信（Terraform 管理外） |
 
 ## AWS サービス
 
@@ -22,14 +23,13 @@
 | VPC | ネットワーク分離 |
 | NAT Gateway | プライベートサブネットからの外部通信 |
 | Route 53 | DNS 管理 |
-| CloudFront | CDN（フロントエンド + API キャッシュ） |
 
 ### データ・ストレージ
 
 | サービス | 用途 |
 |---|---|
 | RDS PostgreSQL 16 | メインデータベース |
-| S3 | フロントエンドホスティング / ファイルストレージ / ログ保存 |
+| S3 | ファイルストレージ / ログ保存 |
 | ElastiCache for Redis | キャッシュ / タスクキュー（Celery 導入時） |
 
 ### セキュリティ
@@ -50,7 +50,6 @@
 | CloudWatch Logs | コンテナ / RDS / ALB ログ収集 |
 | CloudWatch Alarms | メトリクスベースのアラート |
 | CloudWatch Container Insights | ECS メトリクス |
-| CloudWatch RUM | フロントエンドパフォーマンス |
 | CloudTrail | API 呼び出し監査 |
 | SNS | アラーム通知 → Discord |
 
@@ -60,6 +59,7 @@
 
 | 項目 | 技術 |
 |---|---|
+| ホスティング | Vercel |
 | フレームワーク | React 19 (SPA) |
 | ビルドツール | Vite 7 |
 | 言語 | TypeScript 5.9 |

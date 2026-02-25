@@ -6,14 +6,13 @@
 graph TB
     User["ユーザー"]
 
+    subgraph Vercel["Vercel (Terraform 管理外)"]
+        Frontend["React SPA\n(フロントエンド)"]
+    end
+
     subgraph AWS["AWS Cloud (ap-northeast-1)"]
         Route53["Route 53"]
         WAF["WAF (staging/prod)"]
-
-        subgraph CF["CloudFront (CDN)"]
-            S3["S3\n(React SPA)"]
-            ALBOrigin["ALB Origin"]
-        end
 
         subgraph VPC["VPC (10.x.0.0/16)"]
             subgraph Public["Public Subnet (x2 AZ)"]
@@ -41,10 +40,10 @@ graph TB
         Academic["Semantic Scholar\narXiv / OpenAlex"]
     end
 
+    User -->|HTTPS| Vercel
     User -->|HTTPS| Route53
     Route53 --> WAF
-    WAF --> CF
-    ALBOrigin --> ALB
+    WAF --> ALB
     ALB --> ECS
     ECS --> RDS
     ECS --> NAT
@@ -58,21 +57,22 @@ graph TB
 ```
 ユーザー
   │
-  ▼
-Route 53 (DNS)
-  │
-  ▼
-CloudFront (CDN + WAF)
-  │
-  ├── 静的コンテンツ ──▶ S3 (React SPA)
-  │
-  └── /api/* ──▶ ALB (HTTPS)
-                  │
-                  ▼
-              ECS Fargate (FastAPI)
-                  │
-                  ▼
-              RDS PostgreSQL (Private Subnet)
+  ├── フロントエンド ──▶ Vercel (React SPA)
+  │                        │
+  │                        ▼
+  └── API リクエスト ──▶ Route 53 (DNS)
+                          │
+                          ▼
+                      WAF (prod のみ)
+                          │
+                          ▼
+                      ALB (HTTPS)
+                          │
+                          ▼
+                      ECS Fargate (FastAPI)
+                          │
+                          ▼
+                      RDS PostgreSQL (Private Subnet)
 ```
 
 ## CI/CD パイプライン
@@ -80,15 +80,16 @@ CloudFront (CDN + WAF)
 ```mermaid
 graph LR
     subgraph GHA["GitHub Actions (OIDC → IAM Role)"]
-        subgraph Frontend["Frontend Deploy"]
-            F1["npm build"] --> F2["S3 sync"] --> F3["CloudFront\ninvalidation"]
-        end
         subgraph Backend["Backend Deploy"]
             B1["Docker build"] --> B2["ECR push"] --> B3["ECS service\nupdate"]
         end
         subgraph Infra["Terraform"]
             T1["plan"] --> T2["apply"]
         end
+    end
+
+    subgraph VercelDeploy["Vercel"]
+        V1["Git push"] --> V2["自動ビルド\n& デプロイ"]
     end
 
     subgraph Trigger["デプロイフロー"]
@@ -98,6 +99,7 @@ graph LR
     end
 
     Trigger --> GHA
+    Trigger --> VercelDeploy
 ```
 
 ## ネットワーク設計

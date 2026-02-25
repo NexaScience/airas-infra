@@ -28,6 +28,20 @@ module "ecs" {
   desired_count      = var.desired_count
   health_check_path  = "/health"
   enable_autoscaling = false
+  certificate_arn    = module.dns.certificate_arn
+}
+
+module "dns" {
+  source = "../../modules/dns"
+
+  project     = var.project
+  environment = var.environment
+
+  domain_name        = "airas.io"
+  api_subdomain      = "api-dev"
+  frontend_subdomain = "dev"
+  alb_dns_name       = module.ecs.alb_dns_name
+  alb_zone_id        = module.ecs.alb_zone_id
 }
 
 module "rds" {
@@ -46,16 +60,6 @@ module "rds" {
   backup_retention_period = var.db_backup_retention
   deletion_protection     = false
   skip_final_snapshot     = true
-}
-
-module "frontend" {
-  source = "../../modules/s3-cloudfront"
-
-  project     = var.project
-  environment = var.environment
-
-  enable_basic_auth      = true
-  basic_auth_credentials = var.basic_auth_credentials
 }
 
 module "monitoring" {

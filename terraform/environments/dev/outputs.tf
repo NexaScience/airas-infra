@@ -38,12 +38,7 @@ output "db_secret_arn" {
   value       = module.rds.db_secret_arn
 }
 
-output "cloudfront_domain_name" {
-  description = "CloudFront domain name"
-  value       = module.frontend.cloudfront_domain_name
-}
-
-output "frontend_bucket_name" {
-  description = "Frontend S3 bucket name"
-  value       = module.frontend.bucket_name
+output "api_fqdn" {
+  description = "API domain name"
+  value       = module.dns.api_fqdn
 }
