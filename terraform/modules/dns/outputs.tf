@@ -10,7 +10,7 @@ output "api_fqdn" {
 
 output "zone_id" {
   description = "Route 53 hosted zone ID"
-  value       = data.aws_route53_zone.main.zone_id
+  value       = var.zone_id
 }
 
 output "frontend_fqdn" {

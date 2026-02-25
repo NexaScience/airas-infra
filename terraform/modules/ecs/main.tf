@@ -229,7 +229,7 @@ resource "aws_lb_target_group" "this" {
 }
 
 locals {
-  https_enabled = var.certificate_arn != ""
+  https_enabled = var.enable_https
 }
 
 resource "aws_lb_listener" "http" {

@@ -18,6 +18,11 @@ variable "api_subdomain" {
   type        = string
 }
 
+variable "zone_id" {
+  description = "Route 53 hosted zone ID"
+  type        = string
+}
+
 variable "alb_dns_name" {
   description = "ALB DNS name"
   type        = string

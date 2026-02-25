@@ -9,3 +9,9 @@ variable "aws_region" {
   type        = string
   default     = "ap-northeast-1"
 }
+
+variable "domain_name" {
+  description = "Root domain name"
+  type        = string
+  default     = "airas.io"
+}
