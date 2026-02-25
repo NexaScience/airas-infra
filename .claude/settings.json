@@ -55,6 +55,13 @@
         "/workspaces/airas"
       ],
       "env": {}
+    },
+    "vercel": {
+      "command": "npx",
+      "args": ["-y", "vercel-mcp-server"],
+      "env": {
+        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}"
+      }
     }
   },
   "PostToolUse": [

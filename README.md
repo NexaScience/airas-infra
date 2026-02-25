@@ -34,6 +34,16 @@ aws configure
 # Default output format: json
 ```
 
+### Vercel MCP サーバー (任意)
+
+Claude Code から Vercel のプロジェクト管理・デプロイ操作を行う場合に設定します。
+
+```bash
+# 1. Vercel API トークンを発行 (Vercel > Settings > Tokens)
+# 2. .env に追加
+VERCEL_API_TOKEN="<発行したトークン>"
+```
+
 ### Terraform の初期化と実行
 
 ```bash
