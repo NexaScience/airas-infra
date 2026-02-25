@@ -20,6 +20,13 @@ module "vpc" {
   single_nat_gateway   = false
 }
 
+module "secrets" {
+  source = "../../modules/secrets"
+
+  project     = var.project
+  environment = var.environment
+}
+
 module "ecs" {
   source = "../../modules/ecs"
 
@@ -41,6 +48,8 @@ module "ecs" {
   max_capacity       = 4
   enable_https       = true
   certificate_arn    = module.dns.certificate_arn
+
+  secret_arns = module.secrets.secret_arns
 }
 
 module "dns" {

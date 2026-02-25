@@ -87,3 +87,9 @@ variable "certificate_arn" {
   type        = string
   default     = ""
 }
+
+variable "secret_arns" {
+  description = "Map of environment variable name to Secrets Manager secret ARN"
+  type        = map(string)
+  default     = {}
+}
