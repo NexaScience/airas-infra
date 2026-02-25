@@ -27,3 +27,8 @@ variable "alb_zone_id" {
   description = "ALB hosted zone ID"
   type        = string
 }
+
+variable "frontend_subdomain" {
+  description = "Frontend subdomain for Vercel (e.g. app, dev)"
+  type        = string
+}

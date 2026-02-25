@@ -39,10 +39,11 @@ module "dns" {
   project     = var.project
   environment = var.environment
 
-  domain_name   = "airas.io"
-  api_subdomain = "api"
-  alb_dns_name  = module.ecs.alb_dns_name
-  alb_zone_id   = module.ecs.alb_zone_id
+  domain_name        = "airas.io"
+  api_subdomain      = "api"
+  frontend_subdomain = "app"
+  alb_dns_name       = module.ecs.alb_dns_name
+  alb_zone_id        = module.ecs.alb_zone_id
 }
 
 module "rds" {

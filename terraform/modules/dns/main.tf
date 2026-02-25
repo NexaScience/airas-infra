@@ -60,3 +60,15 @@ resource "aws_route53_record" "api" {
     evaluate_target_health = true
   }
 }
+
+################################################################################
+# DNS Record: Frontend subdomain → Vercel
+################################################################################
+
+resource "aws_route53_record" "frontend" {
+  zone_id = data.aws_route53_zone.main.zone_id
+  name    = "${var.frontend_subdomain}.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = ["cname.vercel-dns.com"]
+}
