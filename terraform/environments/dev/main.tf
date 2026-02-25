@@ -49,7 +49,7 @@ module "dns" {
 
   domain_name        = "airas.io"
   api_subdomain      = "api-dev"
-  frontend_subdomain = "dev"
+  frontend_subdomain = "app-dev"
   zone_id            = data.terraform_remote_state.global.outputs.route53_zone_id
   alb_dns_name       = module.ecs.alb_dns_name
   alb_zone_id        = module.ecs.alb_zone_id
