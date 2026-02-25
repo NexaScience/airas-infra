@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        environment: [dev, staging, prod]
+        environment: [dev, prod]
     defaults:
       run:
         working-directory: terraform/environments/${{ matrix.environment }}
