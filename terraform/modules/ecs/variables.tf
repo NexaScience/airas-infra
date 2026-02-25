@@ -75,3 +75,9 @@ variable "max_capacity" {
   type        = number
   default     = 4
 }
+
+variable "certificate_arn" {
+  description = "ACM certificate ARN for HTTPS listener. Empty string disables HTTPS."
+  type        = string
+  default     = ""
+}
