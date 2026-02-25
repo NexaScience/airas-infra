@@ -75,3 +75,9 @@ variable "max_capacity" {
   type        = number
   default     = 4
 }
+
+variable "secret_arns" {
+  description = "Map of environment variable name to Secrets Manager secret ARN"
+  type        = map(string)
+  default     = {}
+}

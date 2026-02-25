@@ -56,6 +56,24 @@ resource "aws_iam_role_policy_attachment" "ecs_execution" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role_policy" "ecs_execution_secrets" {
+  count = length(local.all_secret_arns) > 0 ? 1 : 0
+
+  name = "${var.project}-${var.environment}-ecs-secrets"
+  role = aws_iam_role.ecs_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = local.all_secret_arns
+      }
+    ]
+  })
+}
+
 ################################################################################
 # Task Role
 ################################################################################
@@ -73,6 +91,17 @@ resource "aws_iam_role" "ecs_task" {
 # Task Definition
 ################################################################################
 
+locals {
+  container_secrets = [
+    for env_var_name, arn in var.secret_arns : {
+      name      = env_var_name
+      valueFrom = arn
+    }
+  ]
+
+  all_secret_arns = values(var.secret_arns)
+}
+
 resource "aws_ecs_task_definition" "this" {
   family                   = "${var.project}-${var.environment}-backend"
   network_mode             = "awsvpc"
@@ -83,34 +112,37 @@ resource "aws_ecs_task_definition" "this" {
   task_role_arn            = aws_iam_role.ecs_task.arn
 
   container_definitions = jsonencode([
-    {
-      name      = "backend"
-      image     = "${var.ecr_repository_url}:${var.environment}"
-      essential = true
+    merge(
+      {
+        name      = "backend"
+        image     = "${var.ecr_repository_url}:${var.environment}"
+        essential = true
 
-      portMappings = [
-        {
-          containerPort = var.container_port
-          protocol      = "tcp"
-        }
-      ]
+        portMappings = [
+          {
+            containerPort = var.container_port
+            protocol      = "tcp"
+          }
+        ]
 
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
-          "awslogs-region"        = data.aws_region.current.name
-          "awslogs-stream-prefix" = "backend"
+        logConfiguration = {
+          logDriver = "awslogs"
+          options = {
+            "awslogs-group"         = aws_cloudwatch_log_group.ecs.name
+            "awslogs-region"        = data.aws_region.current.name
+            "awslogs-stream-prefix" = "backend"
+          }
         }
-      }
 
-      environment = [
-        {
-          name  = "ENVIRONMENT"
-          value = var.environment
-        }
-      ]
-    }
+        environment = [
+          {
+            name  = "ENVIRONMENT"
+            value = var.environment
+          }
+        ]
+      },
+      length(local.container_secrets) > 0 ? { secrets = local.container_secrets } : {}
+    )
   ])
 
   tags = {

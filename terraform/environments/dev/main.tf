@@ -11,6 +11,13 @@ module "vpc" {
   single_nat_gateway   = true
 }
 
+module "secrets" {
+  source = "../../modules/secrets"
+
+  project     = var.project
+  environment = var.environment
+}
+
 module "ecs" {
   source = "../../modules/ecs"
 
@@ -28,6 +35,8 @@ module "ecs" {
   desired_count      = var.desired_count
   health_check_path  = "/health"
   enable_autoscaling = false
+
+  secret_arns = module.secrets.secret_arns
 }
 
 module "rds" {
