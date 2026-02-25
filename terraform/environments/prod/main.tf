@@ -30,6 +30,19 @@ module "ecs" {
   enable_autoscaling = true
   min_capacity       = 2
   max_capacity       = 4
+  certificate_arn    = module.dns.certificate_arn
+}
+
+module "dns" {
+  source = "../../modules/dns"
+
+  project     = var.project
+  environment = var.environment
+
+  domain_name   = "airas.io"
+  api_subdomain = "api"
+  alb_dns_name  = module.ecs.alb_dns_name
+  alb_zone_id   = module.ecs.alb_zone_id
 }
 
 module "rds" {

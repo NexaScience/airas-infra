@@ -42,3 +42,8 @@ output "waf_web_acl_id" {
   description = "WAF Web ACL ID"
   value       = module.waf.web_acl_id
 }
+
+output "api_fqdn" {
+  description = "API domain name"
+  value       = module.dns.api_fqdn
+}
