@@ -76,8 +76,14 @@ variable "max_capacity" {
   default     = 4
 }
 
+variable "enable_https" {
+  description = "Enable HTTPS listener on ALB"
+  type        = bool
+  default     = false
+}
+
 variable "certificate_arn" {
-  description = "ACM certificate ARN for HTTPS listener. Empty string disables HTTPS."
+  description = "ACM certificate ARN for HTTPS listener"
   type        = string
   default     = ""
 }

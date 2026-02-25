@@ -39,6 +39,7 @@ module "ecs" {
   enable_autoscaling = true
   min_capacity       = 2
   max_capacity       = 4
+  enable_https       = true
   certificate_arn    = module.dns.certificate_arn
 }
 

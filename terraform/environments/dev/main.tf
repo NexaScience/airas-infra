@@ -37,6 +37,7 @@ module "ecs" {
   desired_count      = var.desired_count
   health_check_path  = "/health"
   enable_autoscaling = false
+  enable_https       = true
   certificate_arn    = module.dns.certificate_arn
 }
 
