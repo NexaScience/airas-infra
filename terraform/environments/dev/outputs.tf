@@ -37,3 +37,8 @@ output "db_secret_arn" {
   description = "DB credentials secret ARN"
   value       = module.rds.db_secret_arn
 }
+
+output "api_fqdn" {
+  description = "API domain name"
+  value       = module.dns.api_fqdn
+}

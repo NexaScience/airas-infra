@@ -28,6 +28,19 @@ module "ecs" {
   desired_count      = var.desired_count
   health_check_path  = "/health"
   enable_autoscaling = false
+  certificate_arn    = module.dns.certificate_arn
+}
+
+module "dns" {
+  source = "../../modules/dns"
+
+  project     = var.project
+  environment = var.environment
+
+  domain_name   = "airas.io"
+  api_subdomain = "api-dev"
+  alb_dns_name  = module.ecs.alb_dns_name
+  alb_zone_id   = module.ecs.alb_zone_id
 }
 
 module "rds" {
